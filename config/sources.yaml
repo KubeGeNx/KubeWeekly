@@ -1,0 +1,94 @@
+# KubeWeekly source configuration.
+#
+# This is the git-tracked source of truth. In the cluster it is mounted into
+# the CronJob pod via a ConfigMap generated from this file (see
+# kustomization.yaml at the repo root). Edit here, then re-apply the
+# kustomization — no image rebuild required.
+#
+# categories: core | cncf | security | ecosystem | cloud | emerging
+
+rss:
+  # Kubernetes core
+  - url: https://kubernetes.io/feed.xml
+    category: core
+    name: Kubernetes Blog
+
+  # CNCF
+  - url: https://www.cncf.io/feed/
+    category: cncf
+    name: CNCF Blog
+
+  # Specialist / vendor blogs
+  - url: https://www.redhat.com/en/rss/blog
+    category: ecosystem
+    name: Red Hat Blog
+  - url: https://blog.aquasec.com/rss.xml
+    category: security
+    name: Aqua Security Blog
+  - url: https://kubesimplify.com/rss.xml
+    category: ecosystem
+    name: KubeSimplify
+  - url: https://blog.container-solutions.com/rss.xml
+    category: ecosystem
+    name: Container Solutions Blog
+  # Weaveworks Blog removed: the company shut down in 2024 and
+  # weave.works now redirects through n66d.com -> ambking1234.dev, a
+  # parked-domain malvertising/registration redirect chain, not a blog.
+  - url: https://learnk8s.io/rss.xml
+    category: ecosystem
+    name: Learnk8s Blog
+
+github:
+  releases:
+    - kubernetes/kubernetes
+    - kubernetes/enhancements   # rarely tags releases; kept in case that changes
+    - kubernetes-sigs/cluster-api
+    - helm/helm
+    - argoproj/argo-cd
+    - istio/istio
+    - cilium/cilium
+    - prometheus/prometheus
+    - envoyproxy/envoy
+    - open-telemetry/opentelemetry-collector
+  topic_search:
+    topic: kubernetes
+    sort: updated
+    min_stars: 50
+
+artifacthub:
+  enabled: true
+  kinds: [helm, olm]  # new/updated Helm charts and OLM operators
+
+hackernews:
+  enabled: true
+  queries: ["kubernetes", "k8s", "CNCF"]
+
+reddit:
+  enabled: true
+  subreddits: [kubernetes, devops]
+
+cve:
+  enabled: true
+  keywords: ["kubernetes", "kubelet", "kube-apiserver", "containerd", "cri-o", "etcd"]
+
+cloud_providers:
+  - name: AWS What's New
+    url: https://aws.amazon.com/about-aws/whats-new/recent/feed/
+    category: cloud
+    keywords: [kubernetes, eks, "elastic kubernetes"]
+  - name: Google Cloud Release Notes
+    url: https://cloud.google.com/feeds/gke-release-notes.xml
+    category: cloud
+    keywords: [kubernetes, gke]
+  - name: Azure Updates
+    url: https://www.microsoft.com/releasecommunications/api/v2/azure/rss
+    category: cloud
+    keywords: [kubernetes, aks]
+
+# Best-effort: most SIG discussions live on Google Groups without public RSS.
+# Only include groups actually reachable without auth; expect this connector
+# to have the lowest hit rate and never let its failure block the pipeline.
+mailing_lists:
+  - name: kubernetes-sig-network
+    url: https://groups.google.com/g/kubernetes-sig-network
+    category: core

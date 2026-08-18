@@ -1,0 +1,23 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: kubeweekly
+
+resources:
+  - deploy/k8s/namespace.yaml
+  - deploy/k8s/pvc.yaml
+  - deploy/k8s/cronjob.yaml
+
+# Generates a ConfigMap from the git-tracked config/sources.yaml, hashing the
+# content into the generated name so any edit produces a new ConfigMap.
+# deploy/k8s/cronjob.yaml references the base name "kubeweekly-sources" and
+# kustomize rewrites it to the hashed name automatically.
+#
+# Lives at the repo root (rather than under deploy/k8s/) because kustomize
+# refuses to reference files outside its own directory tree by default, and
+# config/sources.yaml and deploy/k8s/ are siblings — the root is their
+# nearest common ancestor.
+configMapGenerator:
+  - name: kubeweekly-sources
+    files:
+      - sources.yaml=config/sources.yaml

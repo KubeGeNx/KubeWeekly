@@ -1,0 +1,77 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: kubeweekly-daily
+  labels:
+    app: kubeweekly
+spec:
+  # 13:00 UTC daily. Adjust to land before your intended LinkedIn posting time.
+  schedule: "0 13 * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 1
+      activeDeadlineSeconds: 1800
+      template:
+        metadata:
+          labels:
+            app: kubeweekly
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: kubeweekly
+              # Replace with your built/pushed image.
+              image: ghcr.io/kubegenx/kubeweekly:latest
+              env:
+                # "claude" or "deepseek" - selects which provider key below is
+                # actually required. Override per-deploy with `kubectl set env`.
+                - name: LLM_PROVIDER
+                  value: "deepseek"
+                - name: ANTHROPIC_API_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: kubeweekly-secrets
+                      key: anthropic-api-key
+                      optional: true
+                - name: DEEPSEEK_API_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: kubeweekly-secrets
+                      key: deepseek-api-key
+                      optional: true
+                - name: GITHUB_TOKEN
+                  valueFrom:
+                    secretKeyRef:
+                      name: kubeweekly-secrets
+                      key: github-token
+                      optional: true
+                - name: NVD_API_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: kubeweekly-secrets
+                      key: nvd-api-key
+                      optional: true
+              resources:
+                requests:
+                  cpu: 100m
+                  memory: 256Mi
+                limits:
+                  cpu: 500m
+                  memory: 512Mi
+              volumeMounts:
+                - name: data
+                  mountPath: /data
+                - name: sources-config
+                  mountPath: /etc/kubeweekly
+                  readOnly: true
+          volumes:
+            - name: data
+              persistentVolumeClaim:
+                claimName: kubeweekly-data
+            - name: sources-config
+              configMap:
+                # Base name here — kustomize rewrites this to the hashed
+                # generated name automatically (see kustomization.yaml).
+                name: kubeweekly-sources

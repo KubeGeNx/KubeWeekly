@@ -1,0 +1,13 @@
+# Single ReadWriteOnce volume for the SQLite DB and output drafts. Safe with
+# one PVC because CronJob runs at most one Job at a time (concurrencyPolicy:
+# Forbid, set in cronjob.yaml) — there's never concurrent pod access.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: kubeweekly-data
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi

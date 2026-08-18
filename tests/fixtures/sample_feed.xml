@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title>Kubernetes Blog</title>
+    <link>https://kubernetes.io/</link>
+    <item>
+      <title>Kubernetes 1.34: New Feature Announcement</title>
+      <link>https://kubernetes.io/blog/2026/08/15/k8s-1-34/</link>
+      <pubDate>Sat, 15 Aug 2026 09:00:00 GMT</pubDate>
+      <description>Kubernetes 1.34 introduces several new features for workload management.</description>
+    </item>
+    <item>
+      <title>Improving etcd performance in large clusters</title>
+      <link>https://kubernetes.io/blog/2026/08/10/etcd-performance/</link>
+      <pubDate>Mon, 10 Aug 2026 09:00:00 GMT</pubDate>
+      <description>A deep dive into etcd tuning for large-scale clusters.</description>
+    </item>
+  </channel>
+</rss>
